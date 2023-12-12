@@ -99,6 +99,9 @@ int main(int argc, char** argv){
                 return -4;
             }
 
+            send_message(command, strlen(command), socket_desc);
+            close(socket_desc);
+            
             //Call our function
             //execute_command(argc, argv, command, socket_desc);
             return 0;
