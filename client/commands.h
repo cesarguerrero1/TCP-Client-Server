@@ -17,7 +17,4 @@ typedef struct{
 
 } function_map_t;
 
-//Given a proposed client command, delege to correct command
-int execute_command(int, char**, char*, int);
-
 #endif
