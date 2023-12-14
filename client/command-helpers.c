@@ -54,7 +54,7 @@ void send_message(char* buffer, int data_size, int socket){
  * @param {int} buffer_size - Size of the overall buffer
  * @param {int} socket - Server Socket
 */
-void recv_message(char* buffer, int buffer_size, int socket){
+void receive_message(char* buffer, int buffer_size, int socket){
     
     if(recv(socket, buffer, buffer_size, 0) < 0){
         printf("CATASTROPHIC ERROR: Failed to receive data from the server. Closing socket and exiting program\n");

@@ -16,4 +16,4 @@ config.o: config.c config.h
 	gcc -g -Wall -c config.c
 
 clean:
-	rm -rf *.o client
+	rm -f *.o client

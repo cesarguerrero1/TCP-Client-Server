@@ -8,13 +8,15 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include <string.h>
-
 //Struct that alows us to map a command to a function
 typedef struct{
     char* command_name;
     int (*function_pointer)(int, char**, char*, int);
 
-} function_map_t;
+} command_map_t;
+
+
+//Function to handle WRITE command
+int command_write(int, char**, char*, int);
 
 #endif

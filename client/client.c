@@ -62,8 +62,8 @@ int main(int argc, char** argv){
     strncpy(command, argv[1], 9);
 
     //Map our commands to functions
-    function_map_t function_map[NUM_COMMANDS] = {
-        {"WRITE", NULL},
+    command_map_t command_map[NUM_COMMANDS] = {
+        {"WRITE", command_write},
         {"GET", NULL},
         {"RM", NULL},
         {"LS", NULL},
@@ -72,9 +72,8 @@ int main(int argc, char** argv){
 
     //Use our given command to attempt to call a function
     for(int i = 0; i < NUM_COMMANDS; i++){
-
-        //If we find a valid command then attempt to create a TCP connection and delegate to the correct function
-        if(strcmp(command, function_map[i].command_name) == 0){
+        //If we find a valid command then attempt to create a TCP connection and delegate to the mapped function
+        if(strcmp(command, command_map[i].command_name) == 0){
 
             printf("[%s] command issued\n", command);
             
@@ -95,16 +94,12 @@ int main(int argc, char** argv){
 
             //Attempt to connect to the server socket
             if(connect(socket_desc, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-                printf("ERROR: Unable to connect to server\n");
+                printf("ERROR: Cannot connect to server\n");
                 return -4;
             }
 
-            send_message(command, strlen(command), socket_desc);
-            close(socket_desc);
-            
             //Call our function
-            //execute_command(argc, argv, command, socket_desc);
-            return 0;
+            return (command_map[i].function_pointer)(argc, argv, command, socket_desc);
         }
     }
 
