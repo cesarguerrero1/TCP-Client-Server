@@ -114,7 +114,6 @@ int main(int argc, char** argv){
 */
 void signal_handler(int sig){
     printf("\nProgram interrupted by user -- Closing TCP socket!\n");
-
     close(socket_desc);
     exit(0);
 }

@@ -12,7 +12,6 @@
 typedef struct{
     char* command_name;
     int (*function_pointer)(int, char**, char*, int);
-
 } command_map_t;
 
 
