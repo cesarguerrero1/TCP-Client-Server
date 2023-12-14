@@ -113,7 +113,7 @@ int main(int argc, char** argv){
  * @param {int} sig - Signal number that triggered this interruption
 */
 void signal_handler(int sig){
-    printf("\nProgram interrupted by user -- Closing TCP socket!\n");
+    printf("Program interrupted by user -- Closing TCP Socket\n");
     close(socket_desc);
     exit(0);
 }
