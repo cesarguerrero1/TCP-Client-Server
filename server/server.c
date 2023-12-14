@@ -44,6 +44,9 @@ int client_sock;
 int PREVENT_CONNECTIONS = 0;
 int TERMINATE_PROGRAM = 0;
 
+//Initialize Mutex Lock
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 //Create our function map
 command_map_t command_map[NUM_COMMANDS] = {
     {"WRITE", respond_to_write},
@@ -62,7 +65,7 @@ int main(){
     //Initialize our Signal Handler
     signal(SIGINT, signal_handler);
 
-    //Make sure our rfs directory exists
+    //Make sure our root directory exists
     if(mkdir(ROOT_DIR, S_IRWXU) != 0 && errno != EEXIST){
         printf("ERROR: Failed to create root directory\n");
         return -1;
@@ -125,23 +128,27 @@ int main(){
 
     }
 
+    //Destroy the mutex lock and close our server socket 
+    pthread_mutex_destroy(&mutex);
     close(socket_desc);
     return 0;
 }
 
 /**
  * This is a helper function that we are passing to each newly spawned thread so that it is able
- * to discern the given command and run the appropriate function against the given socket
+ * to parse the given command and run the appropriate function against the given socket
  * @param {void*} socket - This will always be cast back to an int so we can utilize our client socket
  * @return {void*} - This is just standard convention for threads
 */
 void* execute_thread(void* socket_pointer){
-
+    //Get Thread ID
+    pthread_t thread_id = pthread_self();
+    
     //Cast our socket back to an int
     int socket = *((int*)socket_pointer);
 
     if(PREVENT_CONNECTIONS == 1){
-        printf("--- The server is no longer accepting new connections and will be shutting down in %d seconds ---\n", WAIT_TIME);
+        printf("--- [STOPPING SERVER] - New client threads are not being accepted allowed ---\n");
         close(socket);
         free(socket_pointer);
         return NULL;
@@ -149,7 +156,7 @@ void* execute_thread(void* socket_pointer){
 
     time_t current_time;
     current_time = time(NULL);
-    printf("Client Thread Started Successfully at %lu\n", current_time);
+    printf("Client Thread #%lu started -- Time: %lu\n", thread_id, current_time);
 
     //Command Buffer Array -- Notice that we put the buffer here to avoid threads from overriding the buffer
     char command_buffer[COMMAND_BUFFER_SIZE];
@@ -166,17 +173,21 @@ void* execute_thread(void* socket_pointer){
     for(int i = 0; i < NUM_COMMANDS; i++){
         //If we find a valid command then attempt to create a TCP connection and delegate to the correct function
         if(strcmp(command_buffer, command_map[i].command_name) == 0){
-            printf("Client Command: [%s]\n", command_buffer);
 
+            printf("Client Command: [%s]\n", command_buffer);
             int result = (command_map[i].function_pointer)(socket);
+
             current_time = time(NULL);
-            printf("Client Thread Completed Successfully at %lu\n", current_time);
+            printf("Client Thread #%lu finished -- %lu\n", thread_id, current_time);
+
+            //Our function will take care of closing the socket
             free(socket_pointer);
 
             if(result == 1){
-                printf("--- Client instructed server to [STOP]. The server will be shutting down in %d seconds ---\n", WAIT_TIME);
+                printf("--- [STOPPING SERVER] - The server will be shutting down in %d seconds ---\n", WAIT_TIME);
                 PREVENT_CONNECTIONS = 1;
                 
+                //Again allow other threads to finish their work
                 sleep(WAIT_TIME);
 
                 TERMINATE_PROGRAM = 1;
@@ -200,15 +211,18 @@ void* execute_thread(void* socket_pointer){
  * @param {int} sig - Signal number that triggered this interruption
 */
 void signal_handler(int sig){
-    printf("\nProgram interrupted by user -- Closing TCP sockets in %d seconds!\n", WAIT_TIME);
+    printf("\nProgram interrupted by user -- Closing TCP sockets in %d seconds\n", WAIT_TIME);
     PREVENT_CONNECTIONS = 1;
 
-    //We want to give the rest of the threads time to finish their work
+    //We want to give the rest of the running threads time to finish their work
     sleep(WAIT_TIME);
 
     //Close the open client socket and server socket
     close(client_sock);
     close(socket_desc);
+
+    //Destroy the mutex lock
+    pthread_mutex_destroy(&mutex);
 
     exit(0);
 }

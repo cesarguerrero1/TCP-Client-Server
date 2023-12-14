@@ -5,12 +5,16 @@
  * @file This file is the soure code for all of the main commands for interacting with the client
 */
 
+//Thread Library
+#include <pthread.h>
+
 //Socket Libraries
 #include <sys/socket.h>
 #include <unistd.h>
 
 //Standard Libraries
 #include <string.h>
+#include <stdio.h>
 
 //Header Files
 #include "config.h"
@@ -34,13 +38,18 @@ int respond_to_write(int socket){
     clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
     clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
 
+    //Get the mutex lock
+    pthread_mutex_lock(&mutex);
+    printf("This is should print after the lock\n");
+
     sleep(10);
 
     //Send a message
     strncpy(status_buffer, "READY", STATUS_BUFFER_SIZE-1);
     send_message(status_buffer, strlen(status_buffer), socket);
 
-    //Close the socket
+    //Release the lock and close the socket
+    pthread_mutex_unlock(&mutex);
     close(socket);
 
     return 0;

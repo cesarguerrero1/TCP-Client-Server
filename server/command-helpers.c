@@ -59,7 +59,7 @@ int send_message(char* buffer, int data_size, int socket){
 int receive_message(char* buffer, int buffer_size, int socket){
 
   if(recv(socket, buffer, buffer_size, 0) < 0){
-    printf("CATASTROPHIC ERROR: Failed to receive data to the client. Closing client socket. If the issue persists restart the server\n");
+    printf("CATASTROPHIC ERROR: Failed to receive data from the client. Closing client socket. If the issue persists restart the server\n");
     close(socket);
     return 1000;
   }
