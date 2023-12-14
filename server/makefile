@@ -16,4 +16,4 @@ config.o: config.c config.h
 	gcc -g -Wall -c config.c
 
 clean:
-	rm -r *.o server ./root
+	rm -rf *.o server ./root

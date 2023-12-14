@@ -15,6 +15,6 @@ void clear_buffer(char*, int);
 void send_message(char*, int, int);
 
 //Helper function to store data from the server in a buffer
-void recv_message(char*, int, int);
+void receive_message(char*, int, int);
 
 #endif

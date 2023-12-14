@@ -13,7 +13,7 @@ extern char SOCKET_IP_ADDRESS[];
 extern int SOCKET_PORT;
 
 //Constant values for our program
-enum CONSTANTS{
+enum PROGRAM_CONSTANTS{
     NUM_COMMANDS = 5,
     MAX_FILEPATH_LENGTH = 100
 };
