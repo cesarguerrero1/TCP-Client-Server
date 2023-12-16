@@ -41,14 +41,16 @@ int command_stop(int argc, char** argv, char* command, int socket){
 
     //Receive response from the server
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+
+    //Close our socket
+    close(socket);
+
     printf("SERVER RESPONSE: %s\n", status_buffer);
     if(strcmp(status_buffer, "OK") != 0){
         printf("ERROR: Server failed to [STOP]\n");
         return 10;
     }
 
-    //Always close the socket
-    close(socket);
     return 0;
 }
 
