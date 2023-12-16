@@ -16,7 +16,7 @@ extern int SOCKET_PORT;
 enum PROGRAM_CONSTANTS{
     NUM_COMMANDS = 5,
     MAX_FILEPATH_LENGTH = 100,
-    WAIT_TIME = 15 //Seconds
+    SHUTDOWN_TIME = 10, //Seconds
 };
 
 //These values are for sizing our buffers

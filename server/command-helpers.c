@@ -30,21 +30,21 @@ void clear_buffer(char* buffer, int buffer_size){
 
 /**
  * This helper function is used to send data to the client. If there is an issue with the 
- * send then the program will only close the CLIENT socket and then return to listening for a new client
- * @param {char*} buffer - Buffer storing data we want to send
+ * send then the program will only close the CLIENT socket
+ * @param {char*} buffer - Buffer storing data we want to send to our client
  * @param {int} data_size - Size of the data we are sending
  * @param {int} socket - Client Socket
  * @return {int} - Zero if everything goes well else 999 if send fails
 */
 int send_message(char* buffer, int data_size, int socket){
     
-  if(send(socket, buffer, data_size, 0) < 0){
-    printf("CATASTROPHIC ERROR: Failed to send data to the client. Closing client socket. If the issue persists restart the server\n");
-    close(socket);
-    return 999;
-  }
+    if(send(socket, buffer, data_size, 0) < 0){
+        printf("CATASTROPHIC ERROR: Failed to send data to the client, closing client socket. If the issue persists restart the server\n");
+        close(socket);
+        return 999;
+    }
 
-  return 0;
+    return 0;
 }
 
 
@@ -58,11 +58,11 @@ int send_message(char* buffer, int data_size, int socket){
 */
 int receive_message(char* buffer, int buffer_size, int socket){
 
-  if(recv(socket, buffer, buffer_size, 0) < 0){
-    printf("CATASTROPHIC ERROR: Failed to receive data from the client. Closing client socket. If the issue persists restart the server\n");
-    close(socket);
-    return 1000;
-  }
-  
-  return 0;
+    if(recv(socket, buffer, buffer_size, 0) < 0){
+        printf("CATASTROPHIC ERROR: Failed to receive data from the client, closing client socket. If the issue persists restart the server\n");
+        close(socket);
+        return 1000;
+    }
+    
+    return 0;
 }
