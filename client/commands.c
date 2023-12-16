@@ -23,11 +23,42 @@ char status_buffer[STATUS_BUFFER_SIZE];
 char header_buffer[HEADER_BUFFER_SIZE];
 
 /**
- * This function handles completion of the WRITE command cycle. When issued the client
- * will send a local file to the server to be written in the remote file system
- * @param {char*} command - The command the client wishes to perform
+ * This function handles completion of the STOP command cycle. When issued the
+ * client is instructing the server to STOP
  * @param {int} argc - Count of command line arguments
  * @param {char**} argv - Array of command line arguments
+ * @param {char*} command - The command the client wishes to perform
+ * @param {int} socket - This is our server socket
+ * @return {int} - Zero if everything goes well else non-zero
+*/
+int command_stop(int argc, char** argv, char* command, int socket){
+
+    //Clear the status buffer
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Send our STOP command to the server
+    send_message(command, strlen(command), socket);
+
+    //Receive response from the server
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: Server failed to [STOP]\n");
+        return 10;
+    }
+
+    //Always close the socket
+    close(socket);
+    return 0;
+}
+
+
+/**
+ * This function handles completion of the WRITE command cycle. When issued the client
+ * will send a local file to the server to be written in the remote file system
+ * @param {int} argc - Count of command line arguments
+ * @param {char**} argv - Array of command line arguments
+ * @param {char*} command - The command the client wishes to perform
  * @param {int} socket - This is our server socket
  * @return {int} - Zero if everything goes well else non-zero
 */
