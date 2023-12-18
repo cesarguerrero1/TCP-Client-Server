@@ -1,0 +1,19 @@
+TEST 1
+Test Description: Ensure we get a usage error if no command is provided
+EXPECTED OUTPUT:
+'USAGE ERROR: ./client <string: WRITE | string: GET | string: RM | string: LS | string: STOP>'
+
+ACTUAL OUTPUT:
+USAGE ERROR: ./client <string: WRITE | string: GET | string: RM | string: LS | string: STOP>
+Expect 2: 2
+---
+
+TEST 2
+Test Description: Ensure we get an error if an invalid command is provided
+EXPECTED OUTPUT:
+'ERROR: INVALID COMMAND - [nonsense]'
+
+ACTUAL OUTPUT:
+ERROR: INVALID COMMAND - [nonsense]
+Expect 5: 5
+---
