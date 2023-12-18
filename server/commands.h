@@ -19,6 +19,9 @@ typedef struct{
 //Mutex lock
 extern pthread_mutex_t mutex;
 
+//Handle a STOP command issued by the client
+int respond_to_stop(int);
+
 //Handle a WRITE command issued by the client
 int respond_to_write(int);
 

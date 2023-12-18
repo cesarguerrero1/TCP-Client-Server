@@ -1,0 +1,3 @@
+.vscode
+client/*.o
+server/*.o

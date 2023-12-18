@@ -14,6 +14,8 @@ typedef struct{
     int (*function_pointer)(int, char**, char*, int);
 } command_map_t;
 
+//Function to handle STOP command
+int command_stop(int, char**, char*, int);
 
 //Function to handle WRITE command
 int command_write(int, char**, char*, int);

@@ -21,7 +21,7 @@ enum PROGRAM_CONSTANTS{
 //These values are for sizing our buffers
 enum BUFFER_ARRAY_SIZES{
     COMMAND_BUFFER_SIZE = 10, //Buffer for commands: WRITE, GET, etc.
-    PAYLOAD_BUFFER_SIZE = 10000, //1KB Payload Buffer
+    PAYLOAD_BUFFER_SIZE = 10000, //10 KB Payload Buffer
     STATUS_BUFFER_SIZE = 100, //Buffer used for conveying status messages
     HEADER_BUFFER_SIZE = 250, //Buffer used for passing information to help the server prep
 };

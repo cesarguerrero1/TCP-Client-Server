@@ -38,7 +38,7 @@ void clear_buffer(char* buffer, int buffer_size){
 void send_message(char* buffer, int data_size, int socket){
 
     if(send(socket, buffer, data_size, 0) < 0){
-        printf("CATASTROPHIC ERROR: Failed to send data to the server. Closing socket and exiting program\n");
+        printf("ERROR: Failed to send data to the server. Closing socket and exiting program\n");
         close(socket);
         exit(999);
     }
@@ -57,7 +57,7 @@ void send_message(char* buffer, int data_size, int socket){
 void receive_message(char* buffer, int buffer_size, int socket){
     
     if(recv(socket, buffer, buffer_size, 0) < 0){
-        printf("CATASTROPHIC ERROR: Failed to receive data from the server. Closing socket and exiting program\n");
+        printf("ERROR: Failed to receive data from the server. Closing socket and exiting program\n");
         close(socket);
         exit(1000);
     }

@@ -1,0 +1,37 @@
+TEST 1
+Test Description: Calling our STOP command should instruct the server to stop
+EXPECTED OUTPUT:
+'COMMAND: [STOP]'
+'SERVER RESPONSE: OK'
+
+ACTUAL OUTPUT:
+COMMAND: [STOP]
+SERVER RESPONSE: OK
+Expect 0: 0
+---
+
+TEST 2
+Test Description: Concurrent calls should lead to a server response indicating that if the server is beginning a shutdown, new connections should be refused
+EXPECTED OUTPUT:
+'COMMAND: [STOP]'
+'SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED'
+'ERROR: Server failed to [STOP]'
+
+ACTUAL OUTPUT:
+COMMAND: [STOP]
+SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED
+ERROR: Server failed to [STOP]
+Expect 10: 10
+---
+
+TEST 3
+Test Description: Attempting to call a server that is stopped leads to an error
+EXPECTED OUTPUT:
+'COMMAND: [STOP]'
+'ERROR: Cannot connect to server'
+
+ACTUAL OUTPUT:
+COMMAND: [STOP]
+ERROR: Cannot connect to server
+Expect 4: 4
+---

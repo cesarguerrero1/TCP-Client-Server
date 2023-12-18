@@ -22,6 +22,31 @@
 #include "command-helpers.h"
 
 /**
+ * This function deals with handling the STOP command issued by the client.
+ * It will respond to the client that is stopping the server
+ * @param {int} socket - The client socket
+ * @return {int} - A return value of 1 will stop the server
+*/
+int respond_to_stop(int socket){
+
+    //Clear your buffers
+    char status_buffer[STATUS_BUFFER_SIZE];
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    strncpy(status_buffer, "OK", STATUS_BUFFER_SIZE-1);
+    if(send_message(status_buffer, strlen(status_buffer), socket) == 999){
+        //Failed to send message
+        return 2;
+    }
+
+    //Close the socket
+    close(socket);
+
+    return 1;
+}
+
+
+/**
  * This function deals with handling the WRITE command issued by the client. The function will get
  * the file from the client and then attempt to store it on the server
  * @param {int} socket - The client socket we are going to communicate with
@@ -40,7 +65,7 @@ int respond_to_write(int socket){
 
     //Get the mutex lock
     pthread_mutex_lock(&mutex);
-    printf("This is should print after the lock\n");
+    printf("This should print after the lock\n");
 
     sleep(10);
 

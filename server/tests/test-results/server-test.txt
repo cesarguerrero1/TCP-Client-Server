@@ -1,0 +1,13 @@
+TEST 1
+Test Description: Start the server, then 'kill' it and verify that it displays the appropriate information
+EXPECTED OUTPUT:
+'--- Server actively listening for incoming connections ---'
+'--- [PROGRAM INTERRUPTION] ---'
+'SHUTTING DOWN SERVER IN 5 SECONDS'
+
+ACTUAL OUTPUT:
+Expect 0: 0
+--- Server actively listening for incoming connections ---
+
+--- [PROGRAM INTERRUPTION] ---
+SHUTTING DOWN SERVER IN 5 SECONDS
