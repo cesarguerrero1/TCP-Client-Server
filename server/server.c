@@ -173,7 +173,7 @@ int main(){
     }
 
     //We want to give the rest of the running threads time to finish their work
-    printf("SHUTTING DOWN SERVER IN %d SECONDS\n", SHUTDOWN_TIME);
+    printf("SHUTTING SERVER DOWN IN %d SECONDS\n", SHUTDOWN_TIME);
     sleep(SHUTDOWN_TIME);
 
     //Acquire the mutex lock as a final precaution to prevent a thread from potentially
@@ -247,6 +247,8 @@ void* execute_thread(void* socket_pointer){
 
             if(result == 1){
                 PREVENT_CONNECTIONS = 1;
+                //Inputting a sleep to allow for testing PREVENT_CONNECTIONS
+                sleep(1);
 
                 //Writing to the self-pipe to break out of poll()
                 int val = 1;
