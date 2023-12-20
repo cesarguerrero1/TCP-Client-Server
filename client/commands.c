@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
+//Stat Library
+#include <sys/stat.h>
+
 //Header Files
 #include "config.h"
 #include "commands.h"
@@ -71,13 +74,60 @@ int command_write(int argc, char** argv, char* command, int socket){
     clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
     clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
 
-    //Send a message
+    //Path holder variables
+    char local_path[MAX_FILEPATH_LENGTH];
+    char remote_path[MAX_FILEPATH_LENGTH];
+
+    //Check our command line arguments
+    if(argc < 3){
+        printf("USAGE ERROR: ./client WRITE <string: local_path> <(optional)string: remote_path>\n");
+        return 10;
+    }
+
+    strncpy(local_path, argv[2], MAX_FILEPATH_LENGTH-1);
+    strncpy(remote_path, local_path, MAX_FILEPATH_LENGTH-1);
+    if(argc > 3){
+        strncpy(remote_path, argv[3], MAX_FILEPATH_LENGTH-1);
+    }
+
+    //Use stat() to:
+    //1. Ensure our local file path points to a file and not to a directory
+    //2. Get the size of the file
+    struct stat local_path_stat;
+    if(stat(local_path, &local_path_stat) != 0){
+        printf("ERROR: Failed to verify local file path\n");
+        return 11;
+    }
+
+    if(S_ISDIR(local_path_stat.st_mode)){
+        printf("ERROR: Local file path points to a directory\n");
+        return 12;
+    }
+
+    //Open the local file in binary mode
+    printf("Attempting to open file: %s\n", local_path);
+    FILE* file = fopen(local_path, "rb");
+    if(file == NULL){
+        printf("ERROR: Failed to open file\n");
+        return 13;
+    }
+
+    //We do no want to send relative file paths to the server so we need to clean up our path
+    char* server_path = format_path(remote_path);
+    if(server_path == NULL){
+        fclose(file);
+        return 14;
+    }
+    printf("Server Destination: %s\n", server_path);
+
+    //Get the size of the file
+    long file_size = local_path_stat.st_size;
+
+    //Send the command
     send_message(command, strlen(command), socket);
 
-    //Receive a response
-    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
-
-    //Always close the socket
+    //Always close the socket and file
+    fclose(file);
     close(socket);
     return 0;
 }

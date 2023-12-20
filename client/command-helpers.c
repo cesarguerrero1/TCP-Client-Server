@@ -64,3 +64,34 @@ void receive_message(char* buffer, int buffer_size, int socket){
 
     return;
 }
+
+
+/**
+ * This helper function is used to ensure that the path we are passing to our
+ * server is in the correct format
+ * @param {char*} path - The path we want to format
+ * @return {char*} - The formatted path or NULL
+*/
+char* format_path(char* path){
+    if(path == NULL){
+        printf("ERROR: The given remote path is NULL\n");
+        return NULL;
+    }
+
+    //We want to traverse until we find our first non-period or non-slash
+    int count = 0;
+
+    char value = path[count];
+    while(value != '\0'){
+
+        if(value != '.' && value != '/'){
+            return path + count;
+        }
+        count ++;
+        value = path[count];
+    }
+
+    //If we get here then we have a path that is either all periods or all slashes
+    printf("ERROR: The given remote path is invalid and cannot be used\n");
+    return NULL;
+}

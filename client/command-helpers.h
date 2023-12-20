@@ -17,4 +17,7 @@ void send_message(char*, int, int);
 //Helper function to store data from the server in a buffer
 void receive_message(char*, int, int);
 
+//Helper function to ensure that the given file path is in the correct format
+char* format_path(char*);
+
 #endif

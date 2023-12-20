@@ -108,6 +108,7 @@ int main(int argc, char** argv){
     return 5;
 }
 
+
 /**
  * This is a helper function for closing our socket if there is a CTRL+C interrupt by the user
  * @param {int} sig - Signal number that triggered this interruption
