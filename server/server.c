@@ -206,7 +206,7 @@ void* execute_thread(void* socket_pointer){
 
     time_t current_time;
     current_time = time(NULL);
-    printf("Spawning Client Thread #%lu (Timestamp: %lu)\n", thread_id, current_time);
+    printf("Spawning Client Thread #%lu (Timestamp: %lu)\n", (unsigned long)thread_id, current_time);
 
     //Command Buffer Array -- Each thread gets a unique buffer
     char command_buffer[COMMAND_BUFFER_SIZE];
@@ -239,10 +239,8 @@ void* execute_thread(void* socket_pointer){
             printf("CLIENT COMMAND: [%s]\n", command_buffer);
             int result = (command_map[i].function_pointer)(socket);
 
-            current_time = time(NULL);
-            printf("Closing Client Thread #%lu (Timestamp: %lu)\n", thread_id, current_time);
-
-            //Our function will take care of closing the socket
+            //Close and free the socket
+            close(socket);
             free(socket_pointer);
 
             if(result == 1){

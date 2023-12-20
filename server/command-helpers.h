@@ -17,4 +17,10 @@ int send_message(char*, int, int);
 //Helper function to store data from the client in a buffer
 int receive_message(char*, int, int);
 
+//Ensure the path to where the file will be stored exists
+int create_path(char*);
+
+//Apply a version to our file
+void apply_version(char*);
+
 #endif
