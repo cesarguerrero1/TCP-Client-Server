@@ -41,4 +41,5 @@ echo "Expect 5: $?" >> ./tests/test-results/client-test.txt
 echo "---" >> ./tests/test-results/client-test.txt
 
 #To keep the code clean and concise, we wrote method specific tests into their own scripts
-./tests/stop.sh
+./tests/write.sh
+#./tests/stop.sh

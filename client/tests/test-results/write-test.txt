@@ -1,0 +1,114 @@
+
+TEST 1
+Test Description: Test WRITE with no arguments
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'USAGE ERROR: ./client WRITE <string: local_path> <(optional)string: remote_path>'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+USAGE ERROR: ./client WRITE <string: local_path> <(optional)string: remote_path>
+Expect 10: 10
+---
+
+TEST 2
+Test Description: Test WRITE with nonexistent file path
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'ERROR: Failed to verify local file path'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+ERROR: Failed to verify local file path
+Expect 11: 11
+---
+
+TEST 3
+Test Description: Test WRITE with directory path
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'ERROR: Local file path points to a directory'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+ERROR: Local file path points to a directory
+Expect 12: 12
+---
+
+TEST 4
+Test Description: Test WRITE with valid file path but no specified remote path
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'Server Destination: client-root/images/Mario.jpeg'
+'[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+Server Destination: client-root/images/Mario.jpeg
+[WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: FILE RECEIVED
+Expect 0: 0
+---
+
+TEST 5
+Test Description: Test WRITE with invalid remote path
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'ERROR: The given remote path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+ERROR: The given remote path is invalid and cannot be used
+Expect 14: 14
+---
+
+TEST 6
+Test Description: Test WRITE with valid remote path
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'Server Destination: Mario.jpeg'
+'[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+Server Destination: Mario.jpeg
+[WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: FILE RECEIVED
+Expect 0: 0
+---
+
+TEST 7
+Test Description: Test WRITE with 3 concurrent calls all attempting to save different files under the same name
+EXPECTED OUTPUT:
+'COMMAND: [WRITE]'
+'Server Destination: concurrent-test/test.txt'
+'[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
+'COMMAND: [WRITE]'
+'Server Destination: concurrent-test/test.txt'
+'[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
+'COMMAND: [WRITE]'
+'Server Destination: concurrent-test/test.txt'
+'[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
+
+ACTUAL OUTPUT:
+COMMAND: [WRITE]
+Server Destination: concurrent-test/test.txt
+[WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: FILE RECEIVED
+COMMAND: [WRITE]
+Server Destination: concurrent-test/test.txt
+[WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: FILE RECEIVED
+COMMAND: [WRITE]
+Server Destination: concurrent-test/test.txt
+[WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: FILE RECEIVED
+Expect 0: 0
+Expect 0: 0
+Expect 0: 0
+---

@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 
+//Stat Library
+#include <sys/stat.h>
+
 //Header Files
 #include "config.h"
 #include "commands.h"
@@ -42,10 +45,7 @@ int command_stop(int argc, char** argv, char* command, int socket){
     //Receive response from the server
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
 
-    //Close our socket
-    close(socket);
-
-    printf("SERVER RESPONSE: %s\n", status_buffer);
+    printf("[STOP] -- SERVER RESPONSE: %s\n", status_buffer);
     if(strcmp(status_buffer, "OK") != 0){
         printf("ERROR: Server failed to [STOP]\n");
         return 10;
@@ -71,13 +71,97 @@ int command_write(int argc, char** argv, char* command, int socket){
     clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
     clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
 
-    //Send a message
+    //Path holder variables
+    char local_path[MAX_FILEPATH_LENGTH];
+    char remote_path[MAX_FILEPATH_LENGTH];
+
+    //Check our command line arguments
+    if(argc < 3){
+        printf("USAGE ERROR: ./client WRITE <string: local_path> <(optional)string: remote_path>\n");
+        return 10;
+    }
+
+    strncpy(local_path, argv[2], MAX_FILEPATH_LENGTH-1);
+    strncpy(remote_path, local_path, MAX_FILEPATH_LENGTH-1);
+    if(argc > 3){
+        strncpy(remote_path, argv[3], MAX_FILEPATH_LENGTH-1);
+    }
+
+    //Use stat() to:
+    //1. Ensure our local file path points to a file and not to a directory
+    //2. Get the size of the file
+    struct stat local_path_stat;
+    if(stat(local_path, &local_path_stat) != 0){
+        printf("ERROR: Failed to verify local file path\n");
+        return 11;
+    }
+
+    if(S_ISDIR(local_path_stat.st_mode)){
+        printf("ERROR: Local file path points to a directory\n");
+        return 12;
+    }
+
+    //Open the local file in binary mode
+    FILE* file = fopen(local_path, "rb");
+    if(file == NULL){
+        printf("ERROR: Failed to open file\n");
+        return 13;
+    }
+
+    //We do no want to send relative file paths to the server so we need to clean up our path
+    char* server_path = format_path(remote_path);
+    if(server_path == NULL){
+        fclose(file);
+        return 14;
+    }
+    printf("Server Destination: %s\n", server_path);
+
+    //Get the size of the file
+    long file_size = local_path_stat.st_size;
+
+    //Send the command
     send_message(command, strlen(command), socket);
 
-    //Receive a response
+    //Confirm the server is ready to receive our WRITE HEADER
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: Server is not ready to accept WRITE HEADER. Closing file and socket\n");
+        fclose(file);
+        return 15;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
 
-    //Always close the socket
-    close(socket);
+    //Pass WRITE HEADER to the server
+    snprintf(header_buffer, HEADER_BUFFER_SIZE-1, "%lu,%s", file_size, server_path);
+    send_message(header_buffer, strlen(header_buffer), socket);
+
+    //Confirm the server is ready to receive our file data
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    if(strcmp(status_buffer, "PATH ACCEPTED") != 0){
+        printf("ERROR: Server is not ready to accept file data. Closing file and socket\n");
+        fclose(file);
+        return 16;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //We need to send our data -- Recall that in networking, it is BAD practice to attempt to send files all at 
+    //once so we are going to send our data in chunks. As we use fread() the pointer in the file will move
+    //and so we utilize a loop to pickup where left off as we fill our buffer.
+    size_t bytes_read;
+    while(1){
+        bytes_read = fread(payload_buffer, 1, PAYLOAD_BUFFER_SIZE, file);
+        if(bytes_read > 0){
+            send_message(payload_buffer, bytes_read, socket);
+        }else{
+            break;
+        }
+    }
+
+    //Close the file and confirm that the server received all of our data
+    fclose(file);
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
+
     return 0;
 }

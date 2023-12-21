@@ -99,7 +99,12 @@ int main(int argc, char** argv){
             }
 
             //Call our function
-            return (command_map[i].function_pointer)(argc, argv, command, socket_desc);
+            int result = (command_map[i].function_pointer)(argc, argv, command, socket_desc);
+
+            //Close our socket
+            close(socket_desc);
+
+            return result;
         }
     }
 
@@ -107,6 +112,7 @@ int main(int argc, char** argv){
     printf("ERROR: INVALID COMMAND - [%s]\n", command);
     return 5;
 }
+
 
 /**
  * This is a helper function for closing our socket if there is a CTRL+C interrupt by the user
