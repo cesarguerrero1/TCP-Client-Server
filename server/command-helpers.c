@@ -86,6 +86,9 @@ int create_path(char* path){
     strncpy(path, ROOT_DIR, MAX_FILEPATH_LENGTH-1);
     strncat(path, temp_path, MAX_FILEPATH_LENGTH-1);
 
+    //Copy our now correctly formatted path to our temp_path
+    strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+
     //Create directories as needed
     char* temp;
     char slash = '/';
@@ -137,7 +140,6 @@ int create_path(char* path){
             }
         }
     }
-
     return 0;
 }
 

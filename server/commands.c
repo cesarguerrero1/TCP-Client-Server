@@ -120,8 +120,43 @@ int respond_to_write(int socket){
     }
     clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
 
+    //Receive the file data
+    FILE* file = fopen(file_path, "wb");
+    if(file == NULL){
+        printf("CATASTROPHIC ERROR: Failed to open file with valid path. Closing socket\n");
+        pthread_mutex_unlock(&mutex);
+        return 7;
+    }
+
+    size_t bytes_received = 0;
+    while(file_size > 0){
+        bytes_received = recv(socket, payload_buffer, PAYLOAD_BUFFER_SIZE, 0);
+        if(bytes_received == 0 || bytes_received == -1){
+            printf("ERROR: Failed to receive file data from the client. Closing socket\n");
+            //Close the file and then delete it
+            fclose(file);
+            remove(file_path);
+
+            pthread_mutex_unlock(&mutex);
+            return 8;
+        }
+
+        //Write to our file
+        fwrite(payload_buffer, 1, bytes_received, file);
+        file_size -= bytes_received;
+    }
+
+    //Inform our user that we have received the entire file and then clean up
+    fclose(file);
+
+    strncpy(status_buffer, "FILE RECEIVED", STATUS_BUFFER_SIZE-1);
+    if(send_message(status_buffer, strlen(status_buffer), socket) == 999){
+        //Failed to send message
+        pthread_mutex_unlock(&mutex);
+        return 9;
+    }
+
     //Release the lock
     pthread_mutex_unlock(&mutex);
-
     return 0;
 }
