@@ -45,10 +45,7 @@ int command_stop(int argc, char** argv, char* command, int socket){
     //Receive response from the server
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
 
-    //Close our socket
-    close(socket);
-
-    printf("SERVER RESPONSE: %s\n", status_buffer);
+    printf("[STOP] -- SERVER RESPONSE: %s\n", status_buffer);
     if(strcmp(status_buffer, "OK") != 0){
         printf("ERROR: Server failed to [STOP]\n");
         return 10;
@@ -105,7 +102,6 @@ int command_write(int argc, char** argv, char* command, int socket){
     }
 
     //Open the local file in binary mode
-    printf("Attempting to open file: %s\n", local_path);
     FILE* file = fopen(local_path, "rb");
     if(file == NULL){
         printf("ERROR: Failed to open file\n");
@@ -126,8 +122,46 @@ int command_write(int argc, char** argv, char* command, int socket){
     //Send the command
     send_message(command, strlen(command), socket);
 
-    //Always close the socket and file
+    //Confirm the server is ready to receive our WRITE HEADER
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: Server is not ready to accept WRITE HEADER. Closing file and socket\n");
+        fclose(file);
+        return 15;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Pass WRITE HEADER to the server
+    snprintf(header_buffer, HEADER_BUFFER_SIZE-1, "%lu,%s", file_size, server_path);
+    send_message(header_buffer, strlen(header_buffer), socket);
+
+    //Confirm the server is ready to receive our file data
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    if(strcmp(status_buffer, "PATH ACCEPTED") != 0){
+        printf("ERROR: Server is not ready to accept file data. Closing file and socket\n");
+        fclose(file);
+        return 16;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //We need to send our data -- Recall that in networking, it is BAD practice to attempt to send files all at 
+    //once so we are going to send our data in chunks. As we use fread() the pointer in the file will move
+    //and so we utilize a loop to pickup where left off as we fill our buffer.
+    size_t bytes_read;
+    while(1){
+        bytes_read = fread(payload_buffer, 1, PAYLOAD_BUFFER_SIZE, file);
+        if(bytes_read > 0){
+            send_message(payload_buffer, bytes_read, socket);
+        }else{
+            break;
+        }
+    }
+
+    //Close the file and confirm that the server received all of our data
     fclose(file);
-    close(socket);
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
+
     return 0;
 }

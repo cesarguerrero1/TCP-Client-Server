@@ -99,7 +99,12 @@ int main(int argc, char** argv){
             }
 
             //Call our function
-            return (command_map[i].function_pointer)(argc, argv, command, socket_desc);
+            int result = (command_map[i].function_pointer)(argc, argv, command, socket_desc);
+
+            //Close our socket
+            close(socket_desc);
+
+            return result;
         }
     }
 
