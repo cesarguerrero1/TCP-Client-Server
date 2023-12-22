@@ -51,7 +51,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 //Create our function map
 command_map_t command_map[NUM_COMMANDS] = {
     {"WRITE", respond_to_write},
-    {"GET", NULL},
+    {"GET", respond_to_get},
     {"RM", NULL},
     {"LS", NULL},
     {"STOP", respond_to_stop}
@@ -191,6 +191,7 @@ int main(){
     return 0;
 }
 
+
 /**
  * This is a helper function that we are passing to each newly spawned thread so that it is able
  * to parse the given command and run the appropriate function against the given socket
@@ -269,6 +270,7 @@ void* execute_thread(void* socket_pointer){
 
     return NULL;
 }
+
 
 /**
  * This is a helper function for shutting down the server if there is a CTRL+C interrupt by the user

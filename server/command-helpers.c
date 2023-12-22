@@ -140,7 +140,6 @@ int create_path(char* path){
             }
         }
     }
-    return 0;
 }
 
 
@@ -198,4 +197,141 @@ void apply_version(char* path){
     //Final step is to copy our versioned path to our actual path
     strcpy(path, versioned_path);
     return;
+}
+
+
+/**
+ * Given a path, attempt to access the file, and then depending on the 'mode' perform:
+ * - 1: Retrieve a specific version of a file or the latest version
+ * - 2: Get ALL versioning information for a file
+ * - 3: Remove all versions of a given file
+ * @param {char*} path - The path for the file we are attempting to access
+ * @param {int} version - The version of the file we are attempting to access
+ * @param {int} mode - The mode we are using to access the file
+ * @return {int} - Zero if everything works else non-zero
+*/
+int access_file(char* path, int version, int mode){
+
+    //As before we need to append our root directory
+    char temp_path[MAX_FILEPATH_LENGTH];
+    strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+    strncpy(path, ROOT_DIR, MAX_FILEPATH_LENGTH-1);
+    strncat(path, temp_path, MAX_FILEPATH_LENGTH-1);
+
+    //Copy our now correctly formatted path to our temp_path
+    strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+
+    //Remove trailing '/' values
+    char* temp;
+    char slash = '/';
+    //NOTE: The LAST '/' separates our path from our filename.extension
+    temp = strrchr(temp_path, slash);
+
+    //Removing trailing slashes
+    while(1){
+        if(strlen(temp) == 1){
+            //Truncate our string
+            temp_path[temp - temp_path] = '\0';
+            strncpy(path, temp_path, MAX_FILEPATH_LENGTH-1);
+
+            //Continue processing our string
+            temp = strrchr(temp_path, slash);
+        }else{
+            break;
+        }
+    }
+    printf("Analyzing Path: %s (Version: %d)\n", path, version);
+
+    //Decompose our path so we can check for the versioned path
+    char filename[MAX_FILEPATH_LENGTH];
+    char extension[MAX_FILEPATH_LENGTH];
+    
+    //Temporary holders
+    char* extension_to_remove;
+    char period = '.';
+
+    extension_to_remove = strrchr(temp, period);
+    if(extension_to_remove != NULL){
+        //Copy ONLY our extension
+        strncpy(extension, extension_to_remove, MAX_FILEPATH_LENGTH-1);
+        temp[extension_to_remove - temp] = '\0';
+    }else{
+        strcpy(extension, "");
+    }
+
+    //Copy ONLY the filename
+    strncpy(filename, temp, MAX_FILEPATH_LENGTH-1);
+
+    //Truncate our temporary path
+    temp_path[temp - temp_path] = '\0';
+
+
+    //Depending on the mode, perform a different operation
+    if(mode == 1){
+        return access_mode_retrieve(path, temp_path, filename, extension, version);
+    }else if(mode == 2){
+        return 2;
+    }else if(mode == 3){
+        return 3;
+    }else{
+        printf("ERROR: Invalid mode spcified\n");
+        return -1;
+    }
+}
+
+
+/**
+ * Given path components, craft a path with the specified version and attempt to retrieve the file
+ * @param {char*} file_path - The actual path our server will eventually use if the file exists
+ * @param {char*} dir_path - The directory portion of our path
+ * @param {char*} filename - The actual name of the file we are looking for
+ * @param {char*} extension - The extension of our file
+ * @param {int} version - The version we are attempting to retrieve
+ * @return {int} - Zero if everything goes well otherwise non-zero
+ */
+int access_mode_retrieve(char* file_path, char* directory_path, char* filename, char* extension, int version){
+    
+    char versioned_path[MAX_FILEPATH_LENGTH];
+    char trailing_path[MAX_FILEPATH_LENGTH];
+    clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+    clear_buffer(trailing_path, MAX_FILEPATH_LENGTH);
+
+    //If the version is -1 it means we want the most recent version
+    struct stat version_path_stat;
+    if(version == -1){
+        int count = 1;
+        while(1){
+            snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, count, extension);
+            printf("Checking: %s\n", versioned_path);
+
+            if(stat(versioned_path, &version_path_stat) == 0){
+                //The file exists but since a version was not specified we need to keep looking
+                strncpy(trailing_path, versioned_path, MAX_FILEPATH_LENGTH-1);
+                clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+                count++;
+            }else{
+                if(strlen(trailing_path) == 0){
+                    //The file does not exist
+                    return 1;
+                }else{
+                    //We found the most recent version
+                    strncpy(file_path, trailing_path, MAX_FILEPATH_LENGTH-1);
+                    return 0;
+                }
+            }
+        }
+    }else{
+        //A version was specified
+        snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, version, extension);
+        printf("Searching for: %s\n", versioned_path);
+
+        if(stat(versioned_path, &version_path_stat) == 0){
+            //The file was found
+            strncpy(file_path, versioned_path, MAX_FILEPATH_LENGTH-1);
+            return 0;
+        }else{
+            //The file was not found
+            return 1;
+        }
+    }
 }
