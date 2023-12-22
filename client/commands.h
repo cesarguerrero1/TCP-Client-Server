@@ -20,4 +20,7 @@ int command_stop(int, char**, char*, int);
 //Function to handle WRITE command
 int command_write(int, char**, char*, int);
 
+//Function to handle GET command
+int command_get(int, char**, char*, int);
+
 #endif

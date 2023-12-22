@@ -138,6 +138,7 @@ int command_write(int argc, char** argv, char* command, int socket){
 
     //Confirm the server is ready to receive our file data
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
     if(strcmp(status_buffer, "PATH ACCEPTED") != 0){
         printf("ERROR: Server is not ready to accept file data. Closing file and socket\n");
         fclose(file);
@@ -162,6 +163,88 @@ int command_write(int argc, char** argv, char* command, int socket){
     fclose(file);
     receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
     printf("[WRITE] -- SERVER RESPONSE: %s\n", status_buffer);
+
+    return 0;
+}
+
+
+/**
+ * This function handles completion of the GET command cycle. When issued the client
+ * will request a file from the server and store it in the local file system
+ * @param {int} argc - Count of command line arguments
+ * @param {char**} argv - Array of command line arguments
+ * @param {char*} command - The command the client wishes to perform
+ * @param {int} socket - This is our server socket
+ * @return {int} - Zero if everything goes well else non-zero
+*/
+int command_get(int argc, char** argv, char* command, int socket){
+
+    //Clear Buffers
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+    clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
+    clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
+
+    //Path holder variables
+    int version = -1;
+    char remote_path[MAX_FILEPATH_LENGTH];
+    char temp_save_path[MAX_FILEPATH_LENGTH];
+
+    if(argc < 3){
+        printf("USAGE ERROR: ./client GET <string: remote_path> <int: version> <(optional)string: save_path>\n");
+        return 10;
+    }
+    
+    //Assign our variables
+    strncpy(remote_path, argv[2], MAX_FILEPATH_LENGTH-1);
+    strncpy(temp_save_path, remote_path, MAX_FILEPATH_LENGTH-1);
+    if(argc > 3){
+        version = atoi(argv[3]);
+        if(argc > 4){
+            strncpy(temp_save_path, argv[4], MAX_FILEPATH_LENGTH-1);
+        }
+    }
+
+    if(version == -1){
+        printf("INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION\n");
+    }
+
+    //We do no want to send relative file paths to the server so we need to clean up our path
+    char* server_path = format_path(remote_path);
+    if(server_path == NULL){
+        return 11;
+    }
+    printf("Server Destination: %s (Version: %d)\n", server_path, version);
+
+    //Ensure that our save path is in the correct format as well
+    char* save_path = format_path(temp_save_path);
+    if(save_path == NULL){
+        return 12;
+    }
+
+    //Send GET command to the server
+    send_message(command, strlen(command), socket);
+
+    //Confirm the server is ready to receive our GET HEADER
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[GET] -- SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: Server is not ready to accept GET HEADER. Closing socket\n");
+        return 13;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Send GET HEADER to the server
+    snprintf(header_buffer, HEADER_BUFFER_SIZE-1, "%d,%s", version, server_path);
+    send_message(header_buffer, strlen(header_buffer), socket);
+    clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
+
+    //Confirm that the server FOUND THE FILE
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[GET] -- SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "FILE FOUND") != 0){
+        return 14;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
 
     return 0;
 }
