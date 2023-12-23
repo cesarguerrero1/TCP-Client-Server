@@ -265,7 +265,6 @@ int access_file(char* path, int version, int mode){
     //Truncate our temporary path
     temp_path[temp - temp_path] = '\0';
 
-
     //Depending on the mode, perform a different operation
     if(mode == 1){
         return access_mode_retrieve(path, temp_path, filename, extension, version);
@@ -293,16 +292,17 @@ int access_mode_retrieve(char* file_path, char* directory_path, char* filename, 
     
     char versioned_path[MAX_FILEPATH_LENGTH];
     char trailing_path[MAX_FILEPATH_LENGTH];
+    //Clear our buffers
     clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
     clear_buffer(trailing_path, MAX_FILEPATH_LENGTH);
 
     //If the version is -1 it means we want the most recent version
     struct stat version_path_stat;
-    if(version == -1){
+    if(version == 0){
         int count = 1;
         while(1){
             snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, count, extension);
-            printf("Checking: %s\n", versioned_path);
+            printf("Searching: %s\n", versioned_path);
 
             if(stat(versioned_path, &version_path_stat) == 0){
                 //The file exists but since a version was not specified we need to keep looking
@@ -323,7 +323,7 @@ int access_mode_retrieve(char* file_path, char* directory_path, char* filename, 
     }else{
         //A version was specified
         snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, version, extension);
-        printf("Searching for: %s\n", versioned_path);
+        printf("Checking: %s\n", versioned_path);
 
         if(stat(versioned_path, &version_path_stat) == 0){
             //The file was found

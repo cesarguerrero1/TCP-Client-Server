@@ -207,7 +207,7 @@ void* execute_thread(void* socket_pointer){
 
     time_t current_time;
     current_time = time(NULL);
-    printf("Spawning Client Thread #%lu (Timestamp: %lu)\n", (unsigned long)thread_id, current_time);
+    printf("\nSpawning Client Thread #%lu (Timestamp: %lu)\n", (unsigned long)thread_id, current_time);
 
     //Command Buffer Array -- Each thread gets a unique buffer
     char command_buffer[COMMAND_BUFFER_SIZE];
