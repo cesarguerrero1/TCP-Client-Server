@@ -97,7 +97,7 @@ char* format_path(char* path){
     }
 
     //If we get here then we have a path that is either all periods or all slashes
-    printf("ERROR: The given remote path is invalid and cannot be used\n");
+    printf("ERROR: The given path is invalid and cannot be used\n");
     return NULL;
 }
 
@@ -138,11 +138,9 @@ int create_path(char* path){
         }
 
         temp_path[temp - temp_path] = '\0';
-        printf("Creating directory: %s\n", temp_path);
 
         //Attempt to make our directory
         if(mkdir(temp_path, S_IRWXU) == 0){
-            printf("Directory created\n");
             if(repeat == 1){
                 repeat = 0;
                 //Reset our temp_path to the original path for our recursive method
@@ -156,10 +154,8 @@ int create_path(char* path){
         }else{
             //Our directory was not created so we need to handle why
             if(errno == EEXIST){
-                printf("Directory already exists\n");
                 return 0;
             }else if(errno == ENOENT){
-                printf("Could not create directory because parent directory does not exist\n");
                 repeat = 1; //We need to perform our recursive method
                 temp = strrchr(temp_path, slash);
                 continue;

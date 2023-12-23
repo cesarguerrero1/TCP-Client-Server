@@ -18,7 +18,7 @@ rm -f ./tests/test-results/write-test.txt
 touch ./tests/test-results/write-test.txt
 
 #Test 1
-echo -e "\nTEST 1" >> ./tests/test-results/write-test.txt
+echo "TEST 1" >> ./tests/test-results/write-test.txt
 echo "Test Description: Test WRITE with no arguments" >> ./tests/test-results/write-test.txt
 echo "EXPECTED OUTPUT:" >> ./tests/test-results/write-test.txt
 echo "'COMMAND: [WRITE]'" >> ./tests/test-results/write-test.txt
@@ -73,7 +73,7 @@ echo -e "\nTEST 5" >> ./tests/test-results/write-test.txt
 echo "Test Description: Test WRITE with invalid remote path" >> ./tests/test-results/write-test.txt
 echo "EXPECTED OUTPUT:" >> ./tests/test-results/write-test.txt
 echo "'COMMAND: [WRITE]'" >> ./tests/test-results/write-test.txt
-echo "'ERROR: The given remote path is invalid and cannot be used'" >> ./tests/test-results/write-test.txt
+echo "'ERROR: The given path is invalid and cannot be used'" >> ./tests/test-results/write-test.txt
 echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/write-test.txt
 ./client WRITE ./client-root/images/Mario.jpeg .. >> ./tests/test-results/write-test.txt
 echo "Expect 14: $?" >> ./tests/test-results/write-test.txt

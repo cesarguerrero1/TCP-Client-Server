@@ -11,6 +11,7 @@
 //Standard Libraries
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 //Stat Library
 #include <sys/stat.h>
@@ -185,7 +186,7 @@ int command_get(int argc, char** argv, char* command, int socket){
     clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
 
     //Path holder variables
-    int version = -1;
+    int version = 0;
     char remote_path[MAX_FILEPATH_LENGTH];
     char temp_save_path[MAX_FILEPATH_LENGTH];
 
@@ -204,7 +205,7 @@ int command_get(int argc, char** argv, char* command, int socket){
         }
     }
 
-    if(version == -1){
+    if(version <= 0){
         printf("INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION\n");
     }
 

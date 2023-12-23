@@ -1,0 +1,107 @@
+TEST 1
+Test Description: Test GET with no arguments
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'USAGE ERROR: ./client GET <string: remote_path> <int: version> <(optional)string: save_path>'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+USAGE ERROR: ./client GET <string: remote_path> <int: version> <(optional)string: save_path>
+Expect 10: 10
+---
+
+TEST 2
+Test Description: Test GET with invalid remote path, NO version, and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+ERROR: The given path is invalid and cannot be used
+Expect 11: 11
+---
+
+TEST 3
+Test Description: Test GET with valid remote path, NO version, and NO save path. HOWEVER the file does not exist on the server
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'Server Destination: valid-file-path.txt (Version: 0)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+Server Destination: valid-file-path.txt (Version: 0)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+TEST 4
+Test Description: Test GET with valid remote path, invalid version, and NO save path. HOWEVER the file does not exist on the server
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'Server Destination: valid-file-path.txt (Version: 0)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+Server Destination: valid-file-path.txt (Version: 0)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+TEST 5
+Test Description: Test GET with valid remote path, valid version, and NO save path. However the file does not exist on the server.
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: valid-file-path.txt (Version: 2)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: valid-file-path.txt (Version: 2)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+TEST 6
+Test Description: Test GET with valid remote path, valid version, and invalid save path. However the file does not exist on the server.
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: valid-file-path.txt (Version: 2)'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: valid-file-path.txt (Version: 2)
+ERROR: The given path is invalid and cannot be used
+Expect 12: 12
+---
+
+TEST 7
+Test Description: Test GET with valid remote path, valid version, and valid save path. However the file does not exist on the server.
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: valid-file-path.txt (Version: 2)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: valid-file-path.txt (Version: 2)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
