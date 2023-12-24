@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//Stat() Libraries
+#include <sys/stat.h>
+#include <errno.h>
+
 //Header Files
 #include "config.h"
 #include "commands.h"
@@ -231,7 +235,71 @@ int respond_to_get(int socket){
     clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
     clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
 
-    //Release the lock
+    //Confirm that the client knows the file exists
+    if(receive_message(status_buffer, STATUS_BUFFER_SIZE, socket) == 1000){
+        //Failed to receive message
+        pthread_mutex_unlock(&mutex);
+        return 7;
+    }
+    
+    printf("[GET] -- CLIENT RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: The client is not ready to receive the file. Closing socket\n");
+        pthread_mutex_unlock(&mutex);
+        return 8;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Inform the client how large the file is
+    struct stat file_path_stat;
+    stat(file_path, &file_path_stat);
+    long file_size = file_path_stat.st_size;
+
+    snprintf(header_buffer, HEADER_BUFFER_SIZE-1, "%lu", file_size);
+    if(send_message(header_buffer, strlen(header_buffer), socket) == 999){
+        //Failed to send message
+        pthread_mutex_unlock(&mutex);
+        return 9;
+    }
+
+    //Confirm that the client is ready to accept the file
+    if(receive_message(status_buffer, STATUS_BUFFER_SIZE, socket) == 1000){
+        //Failed to receive message
+        pthread_mutex_unlock(&mutex);
+        return 10;
+    }
+
+    printf("[GET] -- CLIENT RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "READY") != 0){
+        printf("ERROR: The client could not confirm the file size. Closing socket\n");
+        pthread_mutex_unlock(&mutex);
+        return 11;
+    }
+
+    //Open our file and send the data
+    FILE* file = fopen(file_path, "rb");
+    if(file == NULL){
+        printf("CATASTROPHIC ERROR: Failed to open file with valid path. Closing socket\n");
+        pthread_mutex_unlock(&mutex);
+        return 12;
+    }
+
+    size_t bytes_read;
+    while(1){
+        bytes_read = fread(payload_buffer, 1, PAYLOAD_BUFFER_SIZE, file);
+        if(bytes_read > 0){
+            if(send_message(payload_buffer, bytes_read, socket) == 999){
+                fclose(file);
+                pthread_mutex_unlock(&mutex);
+                return 13;
+            }
+        }else{
+            break;
+        }
+    }
+
+    //Close our file and release the lock
+    fclose(file);
     pthread_mutex_unlock(&mutex);
     return 0;
 }
