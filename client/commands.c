@@ -6,6 +6,7 @@
 */
 
 //Socket Libraries
+#include <sys/socket.h>
 #include <unistd.h>
 
 //Standard Libraries
@@ -247,5 +248,53 @@ int command_get(int argc, char** argv, char* command, int socket){
     }
     clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
 
+    //Since the server found the file we need to create the path to where we will store it
+    if(create_path(save_path) != 0){
+        strncpy(status_buffer, "ERROR", STATUS_BUFFER_SIZE-1);
+        send_message(status_buffer, strlen(status_buffer), socket);
+        return 15;
+    }
+    printf("Save Destination: %s\n", save_path);
+
+    strncpy(status_buffer, "OK", STATUS_BUFFER_SIZE-1);
+    send_message(status_buffer, strlen(status_buffer), socket);
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Acknowledge the file size AFTER opening the file
+    long file_size;
+    receive_message(header_buffer, HEADER_BUFFER_SIZE, socket);
+    file_size = (long) atoi(header_buffer);
+
+    FILE* file = fopen(save_path, "wb");
+    if(file == NULL){
+        printf("CATASTROPHIC ERROR: Failed to open file with valid path. Closing socket.\n");
+        strncpy(status_buffer, "NOT READY", STATUS_BUFFER_SIZE-1);
+        send_message(status_buffer, strlen(status_buffer), socket);
+        return 16;
+    }
+
+    strncpy(status_buffer, "READY", STATUS_BUFFER_SIZE-1);
+    send_message(status_buffer, strlen(status_buffer), socket);
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Intake the data and write to our file
+    size_t bytes_received;
+    while(file_size > 0){
+        bytes_received = recv(socket, payload_buffer, PAYLOAD_BUFFER_SIZE, 0);
+        if(bytes_received == 0 || bytes_received == -1){
+            //Failed to retrieve data
+            printf("ERROR: Failed to receive file data from the server\n");
+            //Close the file and delete it
+            fclose(file);
+            remove(save_path);
+            return 17;
+        }
+
+        fwrite(payload_buffer, 1, bytes_received, file);
+        file_size -= bytes_received;
+    }
+    fclose(file);
+
+    printf("[GET] -- FILE SAVED\n");
     return 0;
 }
