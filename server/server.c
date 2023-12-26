@@ -53,7 +53,7 @@ command_map_t command_map[NUM_COMMANDS] = {
     {"WRITE", respond_to_write},
     {"GET", respond_to_get},
     {"RM", respond_to_rm},
-    {"LS", NULL},
+    {"LS", respond_to_ls},
     {"STOP", respond_to_stop}
 };
 

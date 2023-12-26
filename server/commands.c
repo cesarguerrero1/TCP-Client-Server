@@ -363,3 +363,64 @@ int respond_to_rm(int socket){
     pthread_mutex_unlock(&mutex);
     return 0;
 }
+
+
+/**
+ * This function deals with handling the LS command issued by the client. The function
+ * will attempt to find metadata on the given file and return it to the client
+ * @param {int} socket - The client socket we are communicating with
+ * @return {int} - Zero if all goes well else non-zero
+*/
+int respond_to_ls(int socket){
+
+    //Clear Buffers
+    char status_buffer[STATUS_BUFFER_SIZE];
+    char header_buffer[HEADER_BUFFER_SIZE];
+    char payload_buffer[PAYLOAD_BUFFER_SIZE];
+
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+    clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
+    clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
+
+    //Respond to the client
+    strncpy(status_buffer, "OK", STATUS_BUFFER_SIZE-1);
+    if(send_message(status_buffer, strlen(status_buffer), socket) == 999){
+        //Failed to send message
+        return 2;
+    }
+
+    //Await the LS HEADER
+    if(receive_message(header_buffer, HEADER_BUFFER_SIZE, socket) == 1000){
+        //Failed to receive message
+        return 3;
+    }
+
+    //Parse the LS HEADER
+    char file_path[MAX_FILEPATH_LENGTH];
+    strncpy(file_path, header_buffer, MAX_FILEPATH_LENGTH-1);
+
+    //Acquire the Mutex Lock so we can safely read our file and any versions
+    pthread_mutex_lock(&mutex);
+
+    //NOTE: I made a QUICK FIX HERE. Since I need to send a payload to the client containing
+    //the metadata I opted to just override the file_path as there is no way for me to access
+    //the payload_buffer from the access_file() function since we are implementing multi-threading.
+    //This is a quick fix and should berevisited in the future
+    if(access_file(file_path, 0, 3) != 0){
+        //ERROR
+        printf("CATASTROPHIC ERROR: Failed to access file(s)\n");
+        pthread_mutex_unlock(&mutex);
+        return 4;
+    }
+
+    strncpy(payload_buffer, file_path, PAYLOAD_BUFFER_SIZE-1);
+    if(send_message(payload_buffer, strlen(payload_buffer), socket) == 999){
+        //Failed to send message
+        pthread_mutex_unlock(&mutex);
+        return 5;
+    }
+
+    //Release the lock
+    pthread_mutex_unlock(&mutex);
+    return 0;
+}

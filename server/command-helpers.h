@@ -32,4 +32,7 @@ int access_mode_retrieve(char*, char*, char*, char*, int);
 //Helper function called by access_file() to remove a file and all its versions
 int access_mode_remove(char*, char*, char*);
 
+//Helper function called by access_file() to list metadata about a file
+int access_mode_lookup(char*, char*, char*, char*);
+
 #endif

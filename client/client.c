@@ -66,7 +66,7 @@ int main(int argc, char** argv){
         {"WRITE", command_write},
         {"GET", command_get},
         {"RM", command_rm},
-        {"LS", NULL},
+        {"LS", command_ls},
         {"STOP", command_stop}
     };
 

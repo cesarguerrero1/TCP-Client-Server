@@ -15,7 +15,7 @@ extern int SOCKET_PORT;
 //Constant values for our program
 enum PROGRAM_CONSTANTS{
     NUM_COMMANDS = 5,
-    MAX_FILEPATH_LENGTH = 100,
+    MAX_FILEPATH_LENGTH = 250,
     SHUTDOWN_TIME = 5, //Seconds
 };
 

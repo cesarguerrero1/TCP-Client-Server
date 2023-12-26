@@ -26,4 +26,7 @@ int command_get(int, char**, char*, int);
 //Function to handle RM command
 int command_rm(int, char**, char*, int);
 
+//Function to handle LS command
+int command_ls(int, char**, char*, int);
+
 #endif
