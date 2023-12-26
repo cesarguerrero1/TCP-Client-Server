@@ -16,4 +16,4 @@ config.o: config.c config.h
 	gcc -g -Wall -c config.c
 
 clean:
-	rm -f *.o client
+	rm -rf *.o client ./client-root/concurrent-test ./client-root/new-images ./client-root/valid-path
