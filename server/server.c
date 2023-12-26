@@ -78,9 +78,8 @@ int main(){
         return 2;
     }
 
-    //Server and Client Socket
+    //Server
     int socket_desc;
-    int client_sock;
 
     //Socket Structures
     socklen_t client_size;
@@ -112,8 +111,8 @@ int main(){
         return 4;
     }
 
-    //Tell the server to start listening for clients
-    if(listen(socket_desc, 1) < 0){
+    //Tell the server to start listening for clients - Backlog of 10 clients allowed
+    if(listen(socket_desc, 10) < 0){
         printf("ERROR: Server failed to begin listening for clients\n");
         return 5;
     }
@@ -138,7 +137,7 @@ int main(){
         if(fds[0].revents & POLLIN){
 
             client_size = sizeof(client_addr);
-            client_sock = accept(socket_desc, (struct sockaddr*)&client_addr, &client_size);
+            int client_sock = accept(socket_desc, (struct sockaddr*)&client_addr, &client_size);
             if(client_sock < 0){
                 printf("ERROR: Cannot connect to client. If the problem persists restart server\n");
                 continue;
@@ -180,8 +179,7 @@ int main(){
     //finishing in an invalid state
     pthread_mutex_lock(&mutex);
 
-    //Close sockets
-    close(client_sock);
+    //Close server socket
     close(socket_desc);
 
     //Release the lock and then destroy it
@@ -207,7 +205,6 @@ void* execute_thread(void* socket_pointer){
 
     time_t current_time;
     current_time = time(NULL);
-    printf("\nSpawning Client Thread #%lu (Timestamp: %lu)\n", (unsigned long)thread_id, current_time);
 
     //Command Buffer Array -- Each thread gets a unique buffer
     char command_buffer[COMMAND_BUFFER_SIZE];
@@ -236,10 +233,11 @@ void* execute_thread(void* socket_pointer){
     for(int i = 0; i < NUM_COMMANDS; i++){
         //If we find a valid command then we need to delegate accordingly
         if(strcmp(command_buffer, command_map[i].command_name) == 0){
-
+            printf("\nStart Executing: %s Client Thread #%lu (Timestamp: %lu)\n", command_buffer, (unsigned long)thread_id, current_time);
             printf("CLIENT COMMAND: [%s]\n", command_buffer);
             int result = (command_map[i].function_pointer)(socket);
-
+            current_time = time(NULL);
+            printf("Finish Executing: %s Client Thread #%lu (Timestamp: %lu)\n", command_buffer, (unsigned long)thread_id, current_time);
             //Close and free the socket
             close(socket);
             free(socket_pointer);
