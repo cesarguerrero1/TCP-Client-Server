@@ -8,7 +8,7 @@
 #include "config.h"
 
 //Root Directory
-char ROOT_DIR[] = "./root/";
+char ROOT_DIR[] = "./server-root/";
 
 //Change this IP Address to "0.0.0.0" when deployed on the remote server instead of "127.0.0.1"
 char SOCKET_IP_ADDRESS[] = "127.0.0.1"; 

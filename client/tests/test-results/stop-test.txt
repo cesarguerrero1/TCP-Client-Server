@@ -2,11 +2,11 @@ TEST 1
 Test Description: Calling our STOP command should instruct the server to stop
 EXPECTED OUTPUT:
 'COMMAND: [STOP]'
-'SERVER RESPONSE: OK'
+'[STOP] -- SERVER RESPONSE: OK'
 
 ACTUAL OUTPUT:
 COMMAND: [STOP]
-SERVER RESPONSE: OK
+[STOP] -- SERVER RESPONSE: OK
 Expect 0: 0
 ---
 
@@ -14,12 +14,12 @@ TEST 2
 Test Description: Concurrent calls should lead to a server response indicating that if the server is beginning a shutdown, new connections should be refused
 EXPECTED OUTPUT:
 'COMMAND: [STOP]'
-'SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED'
+'[STOP] -- SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED'
 'ERROR: Server failed to [STOP]'
 
 ACTUAL OUTPUT:
 COMMAND: [STOP]
-SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED
+[STOP] -- SERVER RESPONSE: SHUT DOWN IN PROGRESS - CONNECTION REFUSED
 ERROR: Server failed to [STOP]
 Expect 10: 10
 ---

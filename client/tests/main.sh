@@ -30,6 +30,7 @@ echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/client-test.txt
 echo "Expect 2: $?" >> ./tests/test-results/client-test.txt
 echo "---" >> ./tests/test-results/client-test.txt
 
+
 #Test 2
 echo -e "\nTEST 2" >> ./tests/test-results/client-test.txt
 echo "Test Description: Ensure we get an error if an invalid command is provided" >> ./tests/test-results/client-test.txt
@@ -40,5 +41,10 @@ echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/client-test.txt
 echo "Expect 5: $?" >> ./tests/test-results/client-test.txt
 echo "---" >> ./tests/test-results/client-test.txt
 
+
 #To keep the code clean and concise, we wrote method specific tests into their own scripts
+./tests/write.sh
+./tests/get.sh
+./tests/ls.sh
+./tests/rm.sh
 ./tests/stop.sh

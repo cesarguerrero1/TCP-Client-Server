@@ -1,0 +1,71 @@
+TEST 1
+Test Description: Test RM with no arguments
+EXPECTED OUTPUT:
+'COMMAND: [RM]'
+'USAGE ERROR: ./client RM <string: remote_path>'
+
+ACTUAL OUTPUT:
+COMMAND: [RM]
+USAGE ERROR: ./client RM <string: remote_path>
+Expect 10: 10
+---
+
+TEST 2
+Test Description: Test RM with an invalid remote path
+EXPECTED OUTPUT:
+'COMMAND: [RM]'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [RM]
+ERROR: The given path is invalid and cannot be used
+Expect 11: 11
+---
+
+TEST 3
+Test Description: Test RM with a file that does not exist on the server using a valid remote path
+EXPECTED OUTPUT:
+'COMMAND: [RM]'
+'Server Removal Destination: 'important-files/main.java
+'[RM] -- SERVER RESPONSE: OK'
+'[RM] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [RM]
+Server Removal Destination: important-files/main.java
+[RM] -- SERVER RESPONSE: OK
+[RM] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 0: 0
+---
+
+TEST 4
+Test Description: Test RM with a file that DOES exist on the server but there is only (1) version
+EXPECTED OUTPUT:
+'COMMAND: [RM]'
+'Server Removal Destination: 'Mario.jpeg
+'[RM] -- SERVER RESPONSE: OK'
+'[RM] -- SERVER RESPONSE: FILE REMOVED'
+
+ACTUAL OUTPUT:
+COMMAND: [RM]
+Server Removal Destination: Mario.jpeg
+[RM] -- SERVER RESPONSE: OK
+[RM] -- SERVER RESPONSE: FILE REMOVED
+Expect 0: 0
+---
+
+TEST 5
+Test Description: Test RM with a file that DOES exist on the server and there are multiple versions of the file
+EXPECTED OUTPUT:
+'COMMAND: [RM]'
+'Server Removal Destination: 'concurrent-test/test.txt
+'[RM] -- SERVER RESPONSE: OK'
+'[RM] -- SERVER RESPONSE: FILE REMOVED'
+
+ACTUAL OUTPUT:
+COMMAND: [RM]
+Server Removal Destination: concurrent-test/test.txt
+[RM] -- SERVER RESPONSE: OK
+[RM] -- SERVER RESPONSE: FILE REMOVED
+Expect 0: 0
+---

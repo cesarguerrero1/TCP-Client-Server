@@ -1,0 +1,153 @@
+TEST 1
+Test Description: Test GET with no arguments
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'USAGE ERROR: ./client GET <string: remote_path> <int: version> <(optional)string: save_path>'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+USAGE ERROR: ./client GET <string: remote_path> <int: version> <(optional)string: save_path>
+Expect 10: 10
+---
+
+TEST 2
+Test Description: Test GET with an invalid remote path, NO specified version, and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+ERROR: The given path is invalid and cannot be used
+Expect 11: 11
+---
+
+TEST 3
+Test Description: Test GET with a file that does not exist on the server using a valid remote path, NO version, and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'Server Destination: valid-file-path.txt (Version: 0)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+Server Destination: valid-file-path.txt (Version: 0)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+TEST 4
+Test Description: Test GET with a file that does not exist on the server using a valid remote path, invalid version, and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'Server Destination: valid-file-path.txt (Version: 0)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+Server Destination: valid-file-path.txt (Version: 0)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+Test 5
+Test Description: Test GET with a file that DOES exist on the server using an invalid version and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION'
+'Server Destination: concurrent-test/test.txt (Version: 0)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE FOUND'
+'Save Destination: ./client-root/concurrent-test/test.txt'
+'[GET] -- FILE SAVED'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+INVALID VERSION PROVIDED -- Defaulting to MOST RECENT VERSION
+Server Destination: concurrent-test/test.txt (Version: 0)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE FOUND
+Save Destination: ./client-root/concurrent-test/test.txt
+[GET] -- FILE SAVED
+Expect 0: 0
+---
+
+Test 6
+Test Description: Test GET with a file that DOES exist on the server using a nonexistent version and NO save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: concurrent-test/test.txt (Version: 4)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE NOT FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: concurrent-test/test.txt (Version: 4)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE NOT FOUND
+Expect 14: 14
+---
+
+Test 7
+Test Description: Test GET with a file that DOES exist on the server using an existing version and a valid save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: concurrent-test/test.txt (Version: 1)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE FOUND'
+'Save Destination: ./client-root/valid-path/text_files/_.txt'
+'[GET] -- FILE SAVED'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: concurrent-test/test.txt (Version: 1)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE FOUND
+Save Destination: ./client-root/valid-path/text_files/_.txt
+[GET] -- FILE SAVED
+Expect 0: 0
+---
+
+Test 8
+Test Description: Test GET with a file that DOES exist on the server using an existing version and using an invalid save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: concurrent-test/test.txt (Version: 1)'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: concurrent-test/test.txt (Version: 1)
+ERROR: The given path is invalid and cannot be used
+Expect 12: 12
+---
+
+Test 9
+Test Description: Test GET with a file that DOES exist on the server using an existing version and using a valid save path
+EXPECTED OUTPUT:
+'COMMAND: [GET]'
+'Server Destination: client-root/images/Mario.jpeg (Version: 1)'
+'[GET] -- SERVER RESPONSE: OK'
+'[GET] -- SERVER RESPONSE: FILE FOUND'
+'Save Destination: ./client-root/new-images/_/Mario.jpeg'
+'[GET] -- FILE SAVED'
+
+ACTUAL OUTPUT:
+COMMAND: [GET]
+Server Destination: client-root/images/Mario.jpeg (Version: 1)
+[GET] -- SERVER RESPONSE: OK
+[GET] -- SERVER RESPONSE: FILE FOUND
+Save Destination: ./client-root/new-images/_/Mario.jpeg
+[GET] -- FILE SAVED
+Expect 0: 0
+---

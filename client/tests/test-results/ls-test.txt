@@ -1,0 +1,89 @@
+TEST 1
+Test Description: Test LS with no arguments
+EXPECTED OUTPUT:
+'COMMAND: [LS]'
+'USAGE ERROR: ./client LS <string: remote_path>'
+
+ACTUAL OUTPUT:
+COMMAND: [LS]
+USAGE ERROR: ./client LS <string: remote_path>
+Expect 10: 10
+---
+
+TEST 2
+Test Description: Test LS with an invalid remote path
+EXPECTED OUTPUT:
+'COMMAND: [LS]'
+'ERROR: The given path is invalid and cannot be used'
+
+ACTUAL OUTPUT:
+COMMAND: [LS]
+ERROR: The given path is invalid and cannot be used
+Expect 11: 11
+---
+
+TEST 3
+Test Description: Test LS with a file that does not exist on the server using a valid remote path
+EXPECTED OUTPUT:
+'COMMAND: [LS]'
+'Server Destination: 'important-files/main.java
+'[LS] -- SERVER RESPONSE: OK'
+'[LS] -- SERVER PAYLOAD:'
+'./main.java METADATA'
+'NO FILE DATA FOUND'
+
+ACTUAL OUTPUT:
+COMMAND: [LS]
+Server Destination: important-files/main.java
+[LS] -- SERVER RESPONSE: OK
+[LS] -- SERVER PAYLOAD
+/main.java METADATA
+NO FILE DATA FOUND
+Expect 0: 0
+---
+
+TEST 4
+Test Description: Test LS with a file that DOES exist on the server but there is only (1) version
+EXPECTED OUTPUT:
+'COMMAND: [LS]'
+'Server Destination: 'client-root/images/Mario.jpeg
+'[LS] -- SERVER RESPONSE: OK'
+'[LS] -- SERVER PAYLOAD:'
+'./Mario.jpeg METADATA'
+'(Version: 1): File Size = X bytes, Last Modified = Y'
+
+ACTUAL OUTPUT:
+COMMAND: [LS]
+Server Destination: client-root/images/Mario.jpeg
+[LS] -- SERVER RESPONSE: OK
+[LS] -- SERVER PAYLOAD
+/Mario.jpeg METADATA
+(Version: 1): File Size = 49718 bytes, Last Modified = 1703576211
+
+Expect 0: 0
+---
+
+TEST 5
+Test Description: Test LS with a file that DOES exist on the server and there are multiple versions of the file
+EXPECTED OUTPUT:
+'COMMAND: [LS]'
+'Server Destination: 'concurrent-test/test.txt
+'[LS] -- SERVER RESPONSE: OK'
+'[LS] -- SERVER PAYLOAD:'
+'./test.txt METADATA'
+'(Version: 1): File Size = X bytes, Last Modified = Y'
+'(Version: 2): File Size = X bytes, Last Modified = Y'
+'(Version: 3): File Size = X bytes, Last Modified = Y'
+
+ACTUAL OUTPUT:
+COMMAND: [LS]
+Server Destination: concurrent-test/test.txt
+[LS] -- SERVER RESPONSE: OK
+[LS] -- SERVER PAYLOAD
+/test.txt METADATA
+(Version: 1): File Size = 18 bytes, Last Modified = 1703576212
+(Version: 2): File Size = 18 bytes, Last Modified = 1703576212
+(Version: 3): File Size = 18 bytes, Last Modified = 1703576212
+
+Expect 0: 0
+---
