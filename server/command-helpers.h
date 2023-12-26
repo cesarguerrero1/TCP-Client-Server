@@ -29,4 +29,7 @@ int access_file(char*, int, int);
 //Helper function called by access_file() to retrieve a file
 int access_mode_retrieve(char*, char*, char*, char*, int);
 
+//Helper function called by access_file() to remove a file and all its versions
+int access_mode_remove(char*, char*, char*);
+
 #endif
