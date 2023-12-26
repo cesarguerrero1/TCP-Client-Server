@@ -303,3 +303,63 @@ int respond_to_get(int socket){
     pthread_mutex_unlock(&mutex);
     return 0;
 }
+
+
+/**
+ * This function deals with handling the RM command issued by the client. The function
+ * will attempt to find the given file and remove it (and all of its versions)
+ * @param {int} socket - The client socket we are communicating with
+ * @return {int} - Zero if all goes well else non-zero
+*/
+int respond_to_rm(int socket){
+    
+    //Clear Buffers
+    char status_buffer[STATUS_BUFFER_SIZE];
+    char header_buffer[HEADER_BUFFER_SIZE];
+
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+    clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
+
+    //Respond to the client
+    strncpy(status_buffer, "OK", STATUS_BUFFER_SIZE-1);
+    if(send_message(status_buffer, strlen(status_buffer), socket) == 999){
+        //Failed to send message
+        return 2;
+    }
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+
+    //Await the RM HEADER
+    if(receive_message(header_buffer, HEADER_BUFFER_SIZE, socket) == 1000){
+        //Failed to receive message
+        return 3;
+    }
+
+    //Parse the RM HEADER
+    char file_path[MAX_FILEPATH_LENGTH];
+    strncpy(file_path, header_buffer, MAX_FILEPATH_LENGTH-1);
+
+    //Acquire the Mutex Lock so we can safely delete all of these files
+    pthread_mutex_lock(&mutex);
+
+    int result = access_file(file_path, 0, 2);
+    if(result == 0){
+       //All files removed
+       strncpy(status_buffer, "FILE REMOVED", STATUS_BUFFER_SIZE-1);
+    }else if(result == 1){
+        //No files removed
+        strncpy(status_buffer, "FILE NOT FOUND", STATUS_BUFFER_SIZE-1);
+    }else{
+        //Error
+        strncpy(status_buffer, "ERROR DELETING FILE", STATUS_BUFFER_SIZE-1);
+    }
+
+    if(send_message(status_buffer, strlen(status_buffer), socket) == 999){
+        //Failed to send message
+        pthread_mutex_unlock(&mutex);
+        return 4;
+    }
+
+    //Release the lock
+    pthread_mutex_unlock(&mutex);
+    return 0;
+}

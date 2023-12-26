@@ -269,7 +269,7 @@ int access_file(char* path, int version, int mode){
     if(mode == 1){
         return access_mode_retrieve(path, temp_path, filename, extension, version);
     }else if(mode == 2){
-        return 2;
+        return access_mode_remove(temp_path, filename, extension);
     }else if(mode == 3){
         return 3;
     }else{
@@ -332,6 +332,47 @@ int access_mode_retrieve(char* file_path, char* directory_path, char* filename, 
         }else{
             //The file was not found
             return 1;
+        }
+    }
+}
+
+
+/**
+ * Given path components, craft a path and attempt to delete all versions of the file
+ * @param {char*} dir_path - The directory portion of our path
+ * @param {char*} filename - The actual name of the file we are looking for
+ * @param {char*} extension - The extension of our file
+ * @return {int} - Zero if everything goes well otherwise non-zero
+*/
+int access_mode_remove(char* directory_path, char* filename, char* extension){
+
+    char versioned_path[MAX_FILEPATH_LENGTH];
+    clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+
+    struct stat version_path_stat;
+    int count = 1;
+    int files_deleted = 0;
+    while(1){
+        snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, count, extension);
+        printf("Attempting to delete: %s\n", versioned_path);
+
+        //When we reach a version that does not exist we break the loop
+        if(stat(versioned_path, &version_path_stat) == 0){
+            if(remove(versioned_path) == -1){
+                printf("CATASTROPHIC ERROR: Failed to delete file\n");
+                return 2;
+            }
+            clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+            files_deleted++;
+            count++;
+        }else{
+            //The file does not exist so we just need to check if we deleted anything
+            if(files_deleted == 0){
+                return 1;
+            }else{
+                //We deleted all possible versions
+                return 0;
+            }
         }
     }
 }

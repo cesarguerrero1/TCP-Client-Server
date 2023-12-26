@@ -52,7 +52,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 command_map_t command_map[NUM_COMMANDS] = {
     {"WRITE", respond_to_write},
     {"GET", respond_to_get},
-    {"RM", NULL},
+    {"RM", respond_to_rm},
     {"LS", NULL},
     {"STOP", respond_to_stop}
 };
