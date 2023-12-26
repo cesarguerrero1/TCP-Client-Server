@@ -45,4 +45,5 @@ echo "---" >> ./tests/test-results/client-test.txt
 #To keep the code clean and concise, we wrote method specific tests into their own scripts
 ./tests/write.sh
 ./tests/get.sh
+./tests/rm.sh
 ./tests/stop.sh
