@@ -351,3 +351,59 @@ int command_rm(int argc, char** argv, char* command, int socket){
 
     return 0;
 }
+
+
+/**
+ * This function handles completion of the LS command cycle. When issued the client
+ * will specify a path to a file that they want metadata on (versions, last written to)
+ * @param {int} argc - Count of command line arguments
+ * @param {char**} argv - Array of command line arguments
+ * @param {char*} command - The command the client wishes to perform
+ * @param {int} socket - This is our server socket
+ * @return {int} - Zero if everything goes well else non-zero
+*/
+int command_ls(int argc, char** argv, char* command, int socket){
+
+    //Clear Buffers
+    clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
+    clear_buffer(header_buffer, HEADER_BUFFER_SIZE);
+    clear_buffer(payload_buffer, PAYLOAD_BUFFER_SIZE);
+
+    char remote_path[MAX_FILEPATH_LENGTH];
+
+    if(argc < 3){
+        printf("USAGE ERROR: ./client LS <string: remote_path>\n");
+        return 10;
+    }
+
+    //Apply formatting
+    strncpy(remote_path, argv[2], MAX_FILEPATH_LENGTH-1);
+    char* server_path = format_path(remote_path);
+    if(server_path == NULL){
+        return 11;
+    }
+    printf("Server Destination: %s\n", server_path);
+
+    //Send our command
+    send_message(command, strlen(command), socket);
+
+    //Confirm the server is ready
+    receive_message(status_buffer, STATUS_BUFFER_SIZE, socket);
+    printf("[LS] -- SERVER RESPONSE: %s\n", status_buffer);
+    if(strcmp(status_buffer, "OK") != 0){
+        printf("ERROR: Server is not ready to accept LS HEADER. Closing socket\n");
+        return 12;
+    }
+
+    //Send path and then wait for payload
+    strncpy(header_buffer, server_path, HEADER_BUFFER_SIZE-1);
+    send_message(header_buffer, strlen(header_buffer), socket);
+
+    receive_message(payload_buffer, PAYLOAD_BUFFER_SIZE, socket);
+    printf("[LS] -- SERVER PAYLOAD\n%s\n", payload_buffer);
+
+    //Flush the stdout to ensure everything is pushed to the console
+    fflush(stdout);
+
+    return 0;
+}
