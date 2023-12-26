@@ -271,7 +271,7 @@ int access_file(char* path, int version, int mode){
     }else if(mode == 2){
         return access_mode_remove(temp_path, filename, extension);
     }else if(mode == 3){
-        return 3;
+        return access_mode_lookup(path, temp_path, filename, extension);
     }else{
         printf("ERROR: Invalid mode spcified\n");
         return -1;
@@ -282,7 +282,7 @@ int access_file(char* path, int version, int mode){
 /**
  * Given path components, craft a path with the specified version and attempt to retrieve the file
  * @param {char*} file_path - The actual path our server will eventually use if the file exists
- * @param {char*} dir_path - The directory portion of our path
+ * @param {char*} directory_path - The directory portion of our path
  * @param {char*} filename - The actual name of the file we are looking for
  * @param {char*} extension - The extension of our file
  * @param {int} version - The version we are attempting to retrieve
@@ -339,7 +339,7 @@ int access_mode_retrieve(char* file_path, char* directory_path, char* filename, 
 
 /**
  * Given path components, craft a path and attempt to delete all versions of the file
- * @param {char*} dir_path - The directory portion of our path
+ * @param {char*} directory_path - The directory portion of our path
  * @param {char*} filename - The actual name of the file we are looking for
  * @param {char*} extension - The extension of our file
  * @return {int} - Zero if everything goes well otherwise non-zero
@@ -350,10 +350,10 @@ int access_mode_remove(char* directory_path, char* filename, char* extension){
     clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
 
     struct stat version_path_stat;
-    int count = 1;
+    int version = 1;
     int files_deleted = 0;
     while(1){
-        snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, count, extension);
+        snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, version, extension);
         printf("Attempting to delete: %s\n", versioned_path);
 
         //When we reach a version that does not exist we break the loop
@@ -364,7 +364,7 @@ int access_mode_remove(char* directory_path, char* filename, char* extension){
             }
             clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
             files_deleted++;
-            count++;
+            version++;
         }else{
             //The file does not exist so we just need to check if we deleted anything
             if(files_deleted == 0){
@@ -375,4 +375,52 @@ int access_mode_remove(char* directory_path, char* filename, char* extension){
             }
         }
     }
+}
+
+
+/**
+ * Given path components, craft a path and attempt to find information all versions of the file
+ * @param {char*} file_path - As q quick fix, we are using this to store the information we find
+ * @param {char*} directory_path - The directory portion of our path
+ * @param {char*} filename - The actual name of the file we are looking for
+ * @param {char*} extension - The extension of our file
+ * @return {int} - Zero
+ */
+int access_mode_lookup(char* file_path, char* directory_path, char* filename, char* extension){
+
+    char versioned_path[MAX_FILEPATH_LENGTH];
+    char temp[MAX_FILEPATH_LENGTH];
+    clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+    clear_buffer(file_path, MAX_FILEPATH_LENGTH);
+    clear_buffer(temp, MAX_FILEPATH_LENGTH);
+
+    snprintf(file_path, MAX_FILEPATH_LENGTH-1, ".%s%s METADATA\n", filename, extension);
+    struct stat version_path_stat;
+    int version = 1;
+    while(1){
+        snprintf(versioned_path, MAX_FILEPATH_LENGTH-1, "%s%s-V%d%s", directory_path, filename, version, extension);
+        printf("Looking up information for: %s\n", versioned_path);
+
+        if(stat(versioned_path, &version_path_stat) == 0){
+            //File exists so add to our metadata
+            long file_size = version_path_stat.st_size;
+            long last_modified = (long) version_path_stat.st_mtimespec.tv_sec;
+
+            //Found a file
+            snprintf(temp, MAX_FILEPATH_LENGTH-1, "(Version: %d): File Size = %ld bytes, Last Modified = %ld\n", version, file_size, last_modified);
+            strncat(file_path, temp, MAX_FILEPATH_LENGTH-1);
+            
+            //Clear the buffers and increment
+            clear_buffer(versioned_path, MAX_FILEPATH_LENGTH);
+            clear_buffer(temp, MAX_FILEPATH_LENGTH);
+            version++;
+        }else{
+            //Check the edgecase of the file not existing
+            if(version == 1){
+                strncat(file_path, "NO FILE DATA FOUND", MAX_FILEPATH_LENGTH-1);
+            }
+            break;
+        }
+    }
+    return 0;
 }
