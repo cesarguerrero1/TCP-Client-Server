@@ -23,4 +23,10 @@ int create_path(char*);
 //Apply a version to our file
 void apply_version(char*);
 
+//Given a path, attempt to access the file, and then depending on the 'mode' perform another function call
+int access_file(char*, int, int);
+
+//Helper function called by access_file() to retrieve a file
+int access_mode_retrieve(char*, char*, char*, char*, int);
+
 #endif

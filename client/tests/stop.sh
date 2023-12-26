@@ -6,10 +6,6 @@
 #This is our STOP shell script. It is used to test the STOP command
 #It is called by main.sh
 
-#Clean up our executable
-make clean
-make
-
 #Clean up our tests output file
 rm -f ./tests/test-results/stop-test.txt
 touch ./tests/test-results/stop-test.txt

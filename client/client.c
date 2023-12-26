@@ -64,7 +64,7 @@ int main(int argc, char** argv){
     //Map our commands to functions
     command_map_t command_map[NUM_COMMANDS] = {
         {"WRITE", command_write},
-        {"GET", NULL},
+        {"GET", command_get},
         {"RM", NULL},
         {"LS", NULL},
         {"STOP", command_stop}

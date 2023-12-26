@@ -9,6 +9,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+//Stat() Libraries
+#include <sys/stat.h>
+#include <errno.h>
+
 //Standard Libraries
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +20,7 @@
 
 //Header Files
 #include "command-helpers.h"
+#include "config.h"
 
 /**
  * Helper function to clear a buffer
@@ -92,6 +97,72 @@ char* format_path(char* path){
     }
 
     //If we get here then we have a path that is either all periods or all slashes
-    printf("ERROR: The given remote path is invalid and cannot be used\n");
+    printf("ERROR: The given path is invalid and cannot be used\n");
     return NULL;
+}
+
+
+/**
+ * Given a file path, create the appropriate directories with respect to the root directory
+ * @param {char*} path - The path we are analyzing
+ * @return {int} - Zero if everything works else non-zero
+*/
+int create_path(char* path){
+    
+    //Create a copy of our path and then rebuild it using our root directory
+    char temp_path[MAX_FILEPATH_LENGTH];
+    strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+    strncpy(path, ROOT_DIR, MAX_FILEPATH_LENGTH-1);
+    strncat(path, temp_path, MAX_FILEPATH_LENGTH-1);
+
+    //Copy our now correctly formatted path to our temp_path
+    strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+
+    //Create directories as needed
+    char* temp;
+    char slash = '/';
+    //NOTE: The FIRST '/' separates our root directory from our actual file path
+    temp = strrchr(temp_path, slash);
+
+    int repeat = 0;
+    while(1){
+        //Remove any trailing '/' values
+        if(strlen(temp) == 1){
+            //Truncate our string
+            temp_path[temp - temp_path] = '\0';
+            strncpy(path, temp_path, MAX_FILEPATH_LENGTH-1);
+
+            //Continue processing our string
+            temp = strrchr(temp_path, slash);
+            continue;
+        }
+
+        temp_path[temp - temp_path] = '\0';
+
+        //Attempt to make our directory
+        if(mkdir(temp_path, S_IRWXU) == 0){
+            if(repeat == 1){
+                repeat = 0;
+                //Reset our temp_path to the original path for our recursive method
+                strncpy(temp_path, path, MAX_FILEPATH_LENGTH-1);
+                temp = strrchr(temp_path, slash);
+                continue;
+            }else{
+                //There is no reason to perform our recursive method
+                return 0;
+            }
+        }else{
+            //Our directory was not created so we need to handle why
+            if(errno == EEXIST){
+                return 0;
+            }else if(errno == ENOENT){
+                repeat = 1; //We need to perform our recursive method
+                temp = strrchr(temp_path, slash);
+                continue;
+            }else{
+                printf("ERROR: Failed to create directory\n");
+                return 1;
+            }
+        }
+    }
 }

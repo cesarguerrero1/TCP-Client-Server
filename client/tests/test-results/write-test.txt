@@ -1,4 +1,3 @@
-
 TEST 1
 Test Description: Test WRITE with no arguments
 EXPECTED OUTPUT:
@@ -12,7 +11,7 @@ Expect 10: 10
 ---
 
 TEST 2
-Test Description: Test WRITE with nonexistent file path
+Test Description: Test WRITE with a nonexistent file path
 EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
 'ERROR: Failed to verify local file path'
@@ -24,7 +23,7 @@ Expect 11: 11
 ---
 
 TEST 3
-Test Description: Test WRITE with directory path
+Test Description: Test WRITE with a directory path
 EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
 'ERROR: Local file path points to a directory'
@@ -36,45 +35,49 @@ Expect 12: 12
 ---
 
 TEST 4
-Test Description: Test WRITE with valid file path but no specified remote path
+Test Description: Test WRITE with a valid file path but no specified remote path
 EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
 'Server Destination: client-root/images/Mario.jpeg'
 '[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: PATH ACCEPTED'
 '[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
 
 ACTUAL OUTPUT:
 COMMAND: [WRITE]
 Server Destination: client-root/images/Mario.jpeg
 [WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: PATH ACCEPTED
 [WRITE] -- SERVER RESPONSE: FILE RECEIVED
 Expect 0: 0
 ---
 
 TEST 5
-Test Description: Test WRITE with invalid remote path
+Test Description: Test WRITE with a valid file path but an invalid remote path
 EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
-'ERROR: The given remote path is invalid and cannot be used'
+'ERROR: The given path is invalid and cannot be used'
 
 ACTUAL OUTPUT:
 COMMAND: [WRITE]
-ERROR: The given remote path is invalid and cannot be used
+ERROR: The given path is invalid and cannot be used
 Expect 14: 14
 ---
 
 TEST 6
-Test Description: Test WRITE with valid remote path
+Test Description: Test WRITE with a valid file and a valid remote path
 EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
 'Server Destination: Mario.jpeg'
 '[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: PATH ACCEPTED'
 '[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
 
 ACTUAL OUTPUT:
 COMMAND: [WRITE]
 Server Destination: Mario.jpeg
 [WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: PATH ACCEPTED
 [WRITE] -- SERVER RESPONSE: FILE RECEIVED
 Expect 0: 0
 ---
@@ -85,30 +88,33 @@ EXPECTED OUTPUT:
 'COMMAND: [WRITE]'
 'Server Destination: concurrent-test/test.txt'
 '[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: PATH ACCEPTED'
 '[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
 'COMMAND: [WRITE]'
 'Server Destination: concurrent-test/test.txt'
 '[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: PATH ACCEPTED'
 '[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
 'COMMAND: [WRITE]'
 'Server Destination: concurrent-test/test.txt'
 '[WRITE] -- SERVER RESPONSE: OK'
+'[WRITE] -- SERVER RESPONSE: PATH ACCEPTED'
 '[WRITE] -- SERVER RESPONSE: FILE RECEIVED'
 
 ACTUAL OUTPUT:
 COMMAND: [WRITE]
 Server Destination: concurrent-test/test.txt
 [WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: PATH ACCEPTED
 [WRITE] -- SERVER RESPONSE: FILE RECEIVED
 COMMAND: [WRITE]
 Server Destination: concurrent-test/test.txt
 [WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: PATH ACCEPTED
 [WRITE] -- SERVER RESPONSE: FILE RECEIVED
 COMMAND: [WRITE]
 Server Destination: concurrent-test/test.txt
 [WRITE] -- SERVER RESPONSE: OK
+[WRITE] -- SERVER RESPONSE: PATH ACCEPTED
 [WRITE] -- SERVER RESPONSE: FILE RECEIVED
-Expect 0: 0
-Expect 0: 0
-Expect 0: 0
----
+All concurrent calls have finished. There should now be (3) versions of test.txt each with their own unique text saved on the server

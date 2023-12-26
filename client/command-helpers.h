@@ -20,4 +20,7 @@ void receive_message(char*, int, int);
 //Helper function to ensure that the given file path is in the correct format
 char* format_path(char*);
 
+//Ensure the path to where the file will be stored exists
+int create_path(char*);
+
 #endif

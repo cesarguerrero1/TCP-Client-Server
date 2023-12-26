@@ -25,4 +25,7 @@ int respond_to_stop(int);
 //Handle a WRITE command issued by the client
 int respond_to_write(int);
 
+//Handle a GET command issued by the client
+int respond_to_get(int);
+
 #endif
