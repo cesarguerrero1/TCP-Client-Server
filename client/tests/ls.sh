@@ -41,7 +41,9 @@ echo "EXPECTED OUTPUT:" >> ./tests/test-results/ls-test.txt
 echo "'COMMAND: [LS]'" >> ./tests/test-results/ls-test.txt
 echo "'Server Destination: 'important-files/main.java" >> ./tests/test-results/ls-test.txt
 echo "'[LS] -- SERVER RESPONSE: OK'" >> ./tests/test-results/ls-test.txt
-echo -e "'[LS] -- SERVER RESPONSE:\n NO FILE DATA FOUND'" >> ./tests/test-results/ls-test.txt
+echo "'[LS] -- SERVER PAYLOAD:'" >> ./tests/test-results/ls-test.txt
+echo "'./main.java METADATA'" >> ./tests/test-results/ls-test.txt
+echo "'NO FILE DATA FOUND'" >> ./tests/test-results/ls-test.txt
 echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/ls-test.txt
 ./client LS ./important-files/main.java >> ./tests/test-results/ls-test.txt
 echo "Expect 0: $?" >> ./tests/test-results/ls-test.txt
@@ -56,7 +58,9 @@ echo "EXPECTED OUTPUT:" >> ./tests/test-results/ls-test.txt
 echo "'COMMAND: [LS]'" >> ./tests/test-results/ls-test.txt
 echo "'Server Destination: 'client-root/images/Mario.jpeg" >> ./tests/test-results/ls-test.txt
 echo "'[LS] -- SERVER RESPONSE: OK'" >> ./tests/test-results/ls-test.txt
-echo "'[LS] -- SERVER RESPONSE:'" >> ./tests/test-results/ls-test.txt
+echo "'[LS] -- SERVER PAYLOAD:'" >> ./tests/test-results/ls-test.txt
+echo "'./Mario.jpeg METADATA'" >> ./tests/test-results/ls-test.txt
+echo "'(Version: 1): File Size = X bytes, Last Modified = Y'" >> ./tests/test-results/ls-test.txt
 #I am not sure the formatting yet
 echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/ls-test.txt
 ./client LS client-root/images/Mario.jpeg >> ./tests/test-results/ls-test.txt
@@ -71,7 +75,11 @@ echo "EXPECTED OUTPUT:" >> ./tests/test-results/ls-test.txt
 echo "'COMMAND: [LS]'" >> ./tests/test-results/ls-test.txt
 echo "'Server Destination: 'concurrent-test/test.txt" >> ./tests/test-results/ls-test.txt
 echo "'[LS] -- SERVER RESPONSE: OK'" >> ./tests/test-results/ls-test.txt
-echo "'[LS] -- SERVER RESPONSE:'" >> ./tests/test-results/ls-test.txt
+echo "'[LS] -- SERVER PAYLOAD:'" >> ./tests/test-results/ls-test.txt
+echo "'./test.txt METADATA'" >> ./tests/test-results/ls-test.txt
+echo "'(Version: 1): File Size = X bytes, Last Modified = Y'" >> ./tests/test-results/ls-test.txt
+echo "'(Version: 2): File Size = X bytes, Last Modified = Y'" >> ./tests/test-results/ls-test.txt
+echo "'(Version: 3): File Size = X bytes, Last Modified = Y'" >> ./tests/test-results/ls-test.txt
 #I am not sure the formatting yet
 echo -e "\nACTUAL OUTPUT:" >> ./tests/test-results/ls-test.txt
 ./client LS concurrent-test/test.txt >> ./tests/test-results/ls-test.txt
