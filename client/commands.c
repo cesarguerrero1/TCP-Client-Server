@@ -341,7 +341,6 @@ int command_rm(int argc, char** argv, char* command, int socket){
     }
     clear_buffer(status_buffer, STATUS_BUFFER_SIZE);
 
-
     //Send the path
     strncpy(header_buffer, server_path, HEADER_BUFFER_SIZE-1);
     send_message(header_buffer, strlen(header_buffer), socket);
