@@ -1,4 +1,4 @@
-# Multi-threaded TCP Rmote File Server and Client
+# Multi-threaded TCP Remote File Server and Client
 
 ## Overview
 This repository contains all of the files needed to run my implementation of a multi-threaded client/server file system. For my implementation I ran the server in (3) different environments:
